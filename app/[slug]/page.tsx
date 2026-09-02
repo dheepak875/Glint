@@ -1,8 +1,6 @@
 import { notFound } from "next/navigation";
-import { getAlbumByIdOrSlug, listPhotosForAlbum, toSafeAlbum } from "@/lib/albums/service";
-import { getSession } from "@/lib/auth/session";
-import { AlbumView } from "@/components/public/AlbumView";
-import { PasswordGate } from "@/components/public/PasswordGate";
+import { getAlbumByIdOrSlug } from "@/lib/albums/service";
+import { AlbumGate } from "@/components/public/AlbumGate";
 
 export default async function PublicAlbumPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -11,14 +9,5 @@ export default async function PublicAlbumPage({ params }: { params: Promise<{ sl
     notFound();
   }
 
-  const session = await getSession();
-  const isAdmin = Boolean(session.isAdmin);
-  const isUnlocked = (session.unlockedAlbumIds ?? []).includes(album.id);
-
-  if (!isAdmin && album.passwordHash && !isUnlocked) {
-    return <PasswordGate albumId={album.id} title={album.title} />;
-  }
-
-  const photos = await listPhotosForAlbum(album.id);
-  return <AlbumView album={toSafeAlbum(album)} photos={photos} />;
+  return <AlbumGate album={album} />;
 }

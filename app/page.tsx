@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { listAlbums, getCoverPhoto } from "@/lib/albums/service";
+import { listAlbums, getCoverPhoto, getHomepageAlbum } from "@/lib/albums/service";
 import { env } from "@/lib/env";
+import { AlbumGate } from "@/components/public/AlbumGate";
 import styles from "./page.module.css";
 
 // The DB isn't available at build time (its volume mounts at container runtime), and album
@@ -8,6 +9,11 @@ import styles from "./page.module.css";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
+  const featured = await getHomepageAlbum();
+  if (featured) {
+    return <AlbumGate album={featured} />;
+  }
+
   const albums = await listAlbums({ publicOnly: true });
   const withCovers = await Promise.all(
     albums.map(async (album) => ({ album, cover: await getCoverPhoto(album) })),

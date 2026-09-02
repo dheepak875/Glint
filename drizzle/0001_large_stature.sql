@@ -1,0 +1,1 @@
+ALTER TABLE `albums` ADD `show_on_homepage` integer DEFAULT false NOT NULL;

@@ -9,6 +9,9 @@ export const albums = sqliteTable("albums", {
   coverPhotoId: text("cover_photo_id"),
   isPublic: integer("is_public", { mode: "boolean" }).notNull().default(true),
   passwordHash: text("password_hash"),
+  /** At most one album has this set — when set, the homepage shows its photos directly
+   * instead of the album-list view. Enforced in application code, not the schema. */
+  showOnHomepage: integer("show_on_homepage", { mode: "boolean" }).notNull().default(false),
   createdAt: text("created_at").notNull().default(sql`(current_timestamp)`),
   updatedAt: text("updated_at").notNull().default(sql`(current_timestamp)`),
 });

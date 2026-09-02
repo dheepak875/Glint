@@ -38,6 +38,7 @@ const updateAlbumSchema = z.object({
   isPublic: z.boolean().optional(),
   coverPhotoId: z.string().nullable().optional(),
   password: z.string().min(1).max(200).nullable().optional(),
+  showOnHomepage: z.boolean().optional(),
 });
 
 export const PATCH = requireAdmin<Ctx>(async (req, ctx) => {

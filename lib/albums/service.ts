@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { and, asc, eq, or, sql } from "drizzle-orm";
+import { and, asc, eq, ne, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { albums, photos } from "@/lib/db/schema";
 import { uniqueSlug } from "./slug";
@@ -64,14 +64,28 @@ export async function updateAlbum(
     isPublic: boolean;
     coverPhotoId: string | null;
     passwordHash: string | null;
+    showOnHomepage: boolean;
   }>,
 ): Promise<Album | undefined> {
+  if (patch.showOnHomepage === true) {
+    // Only one album can be featured on the homepage at a time.
+    await db.update(albums).set({ showOnHomepage: false }).where(ne(albums.id, id));
+  }
   const [row] = await db
     .update(albums)
     .set({ ...patch, updatedAt: new Date().toISOString() })
     .where(eq(albums.id, id))
     .returning();
   return row;
+}
+
+/** The album currently featured on the homepage, if any (must also be public). */
+export async function getHomepageAlbum(): Promise<Album | undefined> {
+  const rows = await db
+    .select()
+    .from(albums)
+    .where(and(eq(albums.showOnHomepage, true), eq(albums.isPublic, true)));
+  return rows[0];
 }
 
 export async function deleteAlbum(id: string): Promise<void> {

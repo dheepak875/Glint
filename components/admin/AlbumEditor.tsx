@@ -50,6 +50,10 @@ export function AlbumEditor({
     await patchAlbum({ isPublic: !album.isPublic });
   }
 
+  async function handleToggleHomepage() {
+    await patchAlbum({ showOnHomepage: !album.showOnHomepage });
+  }
+
   async function handleSetPassword(e: FormEvent) {
     e.preventDefault();
     if (!password.trim()) return;
@@ -103,6 +107,15 @@ export function AlbumEditor({
             <span>{album.isPublic ? "Public" : "Private (unlisted)"}</span>
             <button type="button" className="secondary" onClick={handleTogglePublic} disabled={saving}>
               Make {album.isPublic ? "private" : "public"}
+            </button>
+          </div>
+
+          <div className={styles.toggleRow}>
+            <span>
+              {album.showOnHomepage ? "Shown at the root URL" : "Not shown at the root URL"}
+            </span>
+            <button type="button" className="secondary" onClick={handleToggleHomepage} disabled={saving}>
+              {album.showOnHomepage ? "Unfeature" : "Show at root (/)"}
             </button>
           </div>
 

@@ -14,6 +14,8 @@ export function toSafeAlbum(album: Album) {
   return { ...rest, hasPassword: Boolean(passwordHash) };
 }
 
+export type SafeAlbum = ReturnType<typeof toSafeAlbum>;
+
 export async function listAlbums(opts: { publicOnly: boolean }) {
   if (opts.publicOnly) {
     return db.select().from(albums).where(eq(albums.isPublic, true)).orderBy(asc(albums.createdAt));
@@ -79,6 +81,21 @@ export async function deleteAlbum(id: string): Promise<void> {
 
 export async function listPhotosForAlbum(albumId: string) {
   return db.select().from(photos).where(eq(photos.albumId, albumId)).orderBy(asc(photos.sortOrder));
+}
+
+/** Explicit cover photo if set, otherwise the first photo by sort order. */
+export async function getCoverPhoto(album: Album): Promise<Photo | undefined> {
+  if (album.coverPhotoId) {
+    const rows = await db.select().from(photos).where(eq(photos.id, album.coverPhotoId));
+    if (rows[0]) return rows[0];
+  }
+  const rows = await db
+    .select()
+    .from(photos)
+    .where(eq(photos.albumId, album.id))
+    .orderBy(asc(photos.sortOrder))
+    .limit(1);
+  return rows[0];
 }
 
 export async function reorderPhotos(albumId: string, orderedPhotoIds: string[]): Promise<void> {

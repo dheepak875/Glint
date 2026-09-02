@@ -1,0 +1,44 @@
+.empty {
+  color: var(--color-fg-muted);
+}
+
+.grid {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
+.cell {
+  position: relative;
+  cursor: grab;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--color-bg-raised);
+}
+
+.cell:active {
+  cursor: grabbing;
+}
+
+.thumb {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.deleteButton {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.cell:hover .deleteButton,
+.cell:focus-within .deleteButton {
+  opacity: 1;
+}

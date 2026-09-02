@@ -1,0 +1,91 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.back {
+  color: var(--color-fg-muted);
+  font-size: 0.9rem;
+  width: fit-content;
+}
+
+.back:hover {
+  color: var(--color-fg);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 18rem 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+@media (max-width: 56rem) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+@media (min-width: 56rem) {
+  .settings {
+    border-bottom: none;
+    border-right: 1px solid var(--color-border);
+    padding-right: 1.5rem;
+    padding-bottom: 0;
+  }
+}
+
+.detailsForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.detailsForm label {
+  font-size: 0.8rem;
+  color: var(--color-fg-muted);
+  margin-top: 0.4rem;
+}
+
+.detailsForm button {
+  margin-top: 0.6rem;
+  align-self: flex-start;
+}
+
+.savedHint {
+  color: var(--color-accent);
+  font-size: 0.8rem;
+}
+
+.toggleRow,
+.passwordBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.passwordForm {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.passwordForm input {
+  flex: 1;
+  min-width: 0;
+}
+
+.photosSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}

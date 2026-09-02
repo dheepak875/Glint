@@ -1,0 +1,28 @@
+.dropzone {
+  border: 1px dashed var(--color-border);
+  border-radius: 4px;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--color-fg-muted);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.dropzone:hover,
+.dragging {
+  border-color: var(--color-accent);
+  color: var(--color-fg);
+}
+
+.hiddenInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.error {
+  color: var(--color-danger);
+  margin-top: 0.5rem;
+}

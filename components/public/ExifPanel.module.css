@@ -1,0 +1,21 @@
+.exif {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.label {
+  color: var(--color-fg-muted);
+}
+
+.value {
+  color: var(--color-fg);
+}

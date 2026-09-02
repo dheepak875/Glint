@@ -4,6 +4,8 @@ import { env } from "@/lib/env";
 
 export interface SessionData {
   isAdmin?: boolean;
+  /** Album ids this visitor has successfully entered the password for. */
+  unlockedAlbumIds?: string[];
 }
 
 export const sessionOptions: SessionOptions = {

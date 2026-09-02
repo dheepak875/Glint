@@ -9,9 +9,9 @@ import * as schema from "./schema";
 type GlintDb = ReturnType<typeof drizzle<typeof schema>>;
 
 declare global {
-  // eslint-disable-next-line no-var
+   
   var __glintDb: GlintDb | undefined;
-  // eslint-disable-next-line no-var
+   
   var __glintDbMigration: Promise<void> | undefined;
 }
 

@@ -35,6 +35,12 @@
   text-align: center;
 }
 
+.metaHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .filename {
   color: var(--color-fg-muted);
   font-size: 0.8rem;

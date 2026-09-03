@@ -1,0 +1,33 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: none;
+  padding: 0.25rem 0.4rem;
+  color: var(--color-fg-muted);
+  transition: color 0.2s ease;
+}
+
+.button:hover {
+  color: var(--color-fg);
+}
+
+.button[aria-pressed="true"] {
+  color: var(--color-accent);
+}
+
+.icon {
+  display: block;
+  transition: transform 0.2s ease;
+}
+
+.button:active .icon {
+  transform: scale(0.9);
+}
+
+.count {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  min-width: 1ch;
+}

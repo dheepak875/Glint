@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { Photo } from "@/lib/albums/service";
 import type { PhotoExif } from "@/lib/storage/exif";
 import { ExifPanel } from "./ExifPanel";
+import { LikeButton } from "./LikeButton";
 import styles from "./Lightbox.module.css";
 
 /**
@@ -131,7 +132,10 @@ export function Lightbox({
               className={styles.image}
             />
             <div className={styles.meta}>
-              <p className={styles.filename}>{photo.filename}</p>
+              <div className={styles.metaHeader}>
+                <p className={styles.filename}>{photo.filename}</p>
+                <LikeButton key={photo.id} photoId={photo.id} />
+              </div>
               <ExifPanel exif={photo.exifJson as PhotoExif | null} />
             </div>
           </div>

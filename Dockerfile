@@ -27,9 +27,11 @@ COPY --from=build --chown=node:node /app/.next/static ./.next/static
 COPY --from=build --chown=node:node /app/public ./public
 # Migrations are read from disk at startup, so file tracing doesn't pick them up.
 COPY --from=build --chown=node:node /app/drizzle ./drizzle
+COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/
 RUN mkdir -p /app/data && chown node:node /app/data
 
-USER node
+# Starts as root only to fix the data folder's ownership; the server runs as `node`.
+ENTRYPOINT ["docker-entrypoint.sh"]
 EXPOSE 3000
 VOLUME ["/app/data"]
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \

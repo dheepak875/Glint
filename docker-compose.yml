@@ -1,15 +1,59 @@
-# Quick start: `docker compose up -d`, then open http://localhost:3000/admin
-# Nothing needs configuring. Everything (database, photos, generated secrets) lives in ./data,
-# which is the only thing you need to back up. Optional settings: see .env.example.
+# Glint — self-hosted photography portfolio.
+#
+#   Try it locally:              docker compose up -d                  -> http://localhost:3000/admin
+#   Home server + Cloudflare:    docker compose --profile tunnel up -d  (set TUNNEL_TOKEN in .env)
+#   Cloud server + your domain:  docker compose --profile caddy up -d   (set DOMAIN in .env)
+#
+# Nothing else needs configuring. The database, photos, and generated secrets all live in
+# ./data, which is the only thing to back up. Every setting is described in .env.example.
+# Update with: docker compose pull && docker compose up -d
+
 services:
   glint:
-    build: .
+    image: ghcr.io/dheepak875/glint:${GLINT_VERSION:-latest}
     container_name: glint
     restart: unless-stopped
     ports:
-      - "${PORT:-3000}:3000"
+      # On a cloud server, set GLINT_PORT=127.0.0.1:3000 so only Caddy can reach Glint.
+      - "${GLINT_PORT:-3000}:3000"
     volumes:
       - ./data:/app/data
     env_file:
       - path: .env
         required: false
+
+  # Home servers (Raspberry Pi, Mac mini, NAS): publishes Glint through a Cloudflare Tunnel —
+  # no open router ports, HTTPS handled by Cloudflare. In the tunnel's Public Hostname
+  # settings, point your hostname at http://glint:3000.
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    profiles: [tunnel]
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN:-}
+    depends_on:
+      glint:
+        condition: service_healthy
+
+  # Cloud servers with a public IP: Caddy fetches and renews an HTTPS certificate for DOMAIN
+  # automatically. Point DOMAIN's DNS A/AAAA record at the server before starting.
+  caddy:
+    image: caddy:2
+    profiles: [caddy]
+    restart: unless-stopped
+    command: caddy reverse-proxy --from ${DOMAIN:-localhost} --to glint:3000
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      glint:
+        condition: service_healthy
+
+volumes:
+  caddy-data:
+  caddy-config:

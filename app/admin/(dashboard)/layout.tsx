@@ -16,7 +16,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <Link href="/admin" className={styles.brand}>
           Glint Admin
         </Link>
-        <LogoutButton />
+        <nav className={styles.nav}>
+          <Link href="/admin">Albums</Link>
+          <Link href="/admin/settings">Settings</Link>
+          <Link href="/" target="_blank">
+            View site
+          </Link>
+          <LogoutButton />
+        </nav>
       </header>
       <main className={styles.main}>{children}</main>
     </div>

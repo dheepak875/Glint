@@ -1,20 +1,3 @@
-.main {
-  width: 100%;
-  padding: 4rem 1.5rem 5rem;
-  max-width: 72rem;
-  margin: 0 auto;
-}
-
-.header {
-  margin-bottom: 3rem;
-}
-
-.title {
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: clamp(2rem, 5vw, 3rem);
-}
-
 .empty {
   color: var(--color-fg-muted);
 }
@@ -69,10 +52,4 @@
 .cardDescription {
   color: var(--color-fg-muted);
   font-size: 0.85rem;
-}
-
-@media (max-width: 640px) {
-  .main {
-    padding: 3rem 1rem 4rem;
-  }
 }

@@ -1,0 +1,70 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 40rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.75rem;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 500;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.section label,
+.label {
+  font-size: 0.8rem;
+  color: var(--color-fg-muted);
+  margin-top: 0.6rem;
+}
+
+.hint {
+  font-size: 0.8rem;
+  color: var(--color-fg-muted);
+}
+
+.linkRow {
+  display: grid;
+  grid-template-columns: 9rem 1fr auto;
+  gap: 0.5rem;
+}
+
+@media (max-width: 36rem) {
+  .linkRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+.addLink {
+  align-self: flex-start;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.saved {
+  color: var(--color-accent);
+  font-size: 0.85rem;
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: 0.85rem;
+}

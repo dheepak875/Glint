@@ -64,10 +64,19 @@ export const comments = sqliteTable("comments", {
   createdAt: text("created_at").notNull().default(sql`(current_timestamp)`),
 });
 
+export interface SiteLink {
+  label: string;
+  url: string;
+}
+
+/** Single row (id = 1), created on first save from the admin settings page. */
 export const settings = sqliteTable("settings", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   siteTitle: text("site_title").notNull().default("Glint"),
   siteDescription: text("site_description"),
+  about: text("about"),
+  contactEmail: text("contact_email"),
+  links: text("links", { mode: "json" }).$type<SiteLink[]>(),
   theme: text("theme", { enum: ["light", "dark"] })
     .notNull()
     .default("dark"),

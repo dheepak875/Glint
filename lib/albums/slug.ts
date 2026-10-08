@@ -3,7 +3,16 @@ import { db } from "@/lib/db/client";
 import { albums } from "@/lib/db/schema";
 
 /** Top-level paths owned by the app — an album slug matching one would be unreachable. */
-const RESERVED_SLUGS = new Set(["admin", "api", "_next", "favicon.ico", "robots.txt", "sitemap.xml"]);
+const RESERVED_SLUGS = new Set([
+  "about",
+  "admin",
+  "albums",
+  "api",
+  "_next",
+  "icon.svg",
+  "robots.txt",
+  "sitemap.xml",
+]);
 
 export function slugify(title: string): string {
   const base = title

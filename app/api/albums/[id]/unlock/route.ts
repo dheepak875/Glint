@@ -3,6 +3,9 @@ import { z } from "zod";
 import { getAlbumByIdOrSlug } from "@/lib/albums/service";
 import { verifyPassword } from "@/lib/auth/password";
 import { getSession } from "@/lib/auth/session";
+import { passwordTag } from "@/lib/albums/access";
+import { clientIp } from "@/lib/client-ip";
+import { isRateLimited } from "@/lib/rate-limit";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -18,6 +21,10 @@ export async function POST(req: Request, ctx: Ctx) {
     return NextResponse.json({ ok: true });
   }
 
+  if (isRateLimited(`unlock:${album.id}:${clientIp(req)}`, { max: 10, windowMs: 15 * 60_000 })) {
+    return NextResponse.json({ error: "Too many attempts. Try again later." }, { status: 429 });
+  }
+
   const json = await req.json().catch(() => null);
   const parsed = bodySchema.safeParse(json);
   if (!parsed.success) {
@@ -30,9 +37,7 @@ export async function POST(req: Request, ctx: Ctx) {
   }
 
   const session = await getSession();
-  const unlocked = new Set(session.unlockedAlbumIds ?? []);
-  unlocked.add(album.id);
-  session.unlockedAlbumIds = Array.from(unlocked);
+  session.unlockedAlbums = { ...session.unlockedAlbums, [album.id]: passwordTag(album.passwordHash) };
   await session.save();
 
   return NextResponse.json({ ok: true });

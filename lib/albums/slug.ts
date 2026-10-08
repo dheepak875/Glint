@@ -2,6 +2,9 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { albums } from "@/lib/db/schema";
 
+/** Top-level paths owned by the app — an album slug matching one would be unreachable. */
+const RESERVED_SLUGS = new Set(["admin", "api", "_next", "favicon.ico", "robots.txt", "sitemap.xml"]);
+
 export function slugify(title: string): string {
   const base = title
     .toLowerCase()
@@ -16,7 +19,7 @@ export async function uniqueSlug(title: string): Promise<string> {
   const base = slugify(title);
   let candidate = base;
   let suffix = 2;
-  while (await slugExists(candidate)) {
+  while (RESERVED_SLUGS.has(candidate) || (await slugExists(candidate))) {
     candidate = `${base}-${suffix}`;
     suffix += 1;
   }

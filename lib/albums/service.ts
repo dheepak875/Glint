@@ -16,6 +16,15 @@ export function toSafeAlbum(album: Album) {
 
 export type SafeAlbum = ReturnType<typeof toSafeAlbum>;
 
+/** What visitors' browsers receive: no path to the untouched original, which can carry GPS EXIF. */
+export function toPublicPhoto(photo: Photo) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { storagePath, ...rest } = photo;
+  return rest;
+}
+
+export type PublicPhoto = ReturnType<typeof toPublicPhoto>;
+
 export async function listAlbums(opts: { publicOnly: boolean }) {
   if (opts.publicOnly) {
     return db.select().from(albums).where(eq(albums.isPublic, true)).orderBy(asc(albums.createdAt));
@@ -98,6 +107,15 @@ export async function listPhotosForAlbum(albumId: string) {
 }
 
 /** Explicit cover photo if set, otherwise the first photo by sort order. */
+export async function getPhotoWithAlbum(photoId: string) {
+  const rows = await db
+    .select({ photo: photos, album: albums })
+    .from(photos)
+    .innerJoin(albums, eq(photos.albumId, albums.id))
+    .where(eq(photos.id, photoId));
+  return rows[0];
+}
+
 export async function getCoverPhoto(album: Album): Promise<Photo | undefined> {
   if (album.coverPhotoId) {
     const rows = await db.select().from(photos).where(eq(photos.id, album.coverPhotoId));

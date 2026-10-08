@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getSession } from "@/lib/auth/session";
+import { canViewAlbum } from "@/lib/albums/access";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import {
   getAlbumByIdOrSlug,
@@ -8,6 +8,7 @@ import {
   updateAlbum,
   deleteAlbum,
   toSafeAlbum,
+  toPublicPhoto,
 } from "@/lib/albums/service";
 import { hashPassword } from "@/lib/auth/password";
 
@@ -20,16 +21,12 @@ export async function GET(_req: Request, ctx: Ctx) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const session = await getSession();
-  const isAdmin = Boolean(session.isAdmin);
-  const isUnlocked = (session.unlockedAlbumIds ?? []).includes(album.id);
-
-  if (!isAdmin && album.passwordHash && !isUnlocked) {
+  if (!(await canViewAlbum(album))) {
     return NextResponse.json({ error: "password_required" }, { status: 401 });
   }
 
   const photos = await listPhotosForAlbum(album.id);
-  return NextResponse.json({ album: toSafeAlbum(album), photos });
+  return NextResponse.json({ album: toSafeAlbum(album), photos: photos.map(toPublicPhoto) });
 }
 
 const updateAlbumSchema = z.object({

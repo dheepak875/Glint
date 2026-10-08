@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import type { Photo } from "@/lib/albums/service";
+import type { PublicPhoto } from "@/lib/albums/service";
 import type { PhotoExif } from "@/lib/storage/exif";
 import { ExifPanel } from "./ExifPanel";
 import { LikeButton } from "./LikeButton";
@@ -20,7 +20,7 @@ export function Lightbox({
   onClose,
   onNavigate,
 }: {
-  photos: Photo[];
+  photos: PublicPhoto[];
   index: number | null;
   onClose: () => void;
   onNavigate: (index: number) => void;

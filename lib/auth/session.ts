@@ -1,24 +1,27 @@
 import { cookies } from "next/headers";
 import { getIronSession, type SessionOptions } from "iron-session";
-import { env } from "@/lib/env";
+import { getSessionSecret } from "@/lib/secrets";
 
 export interface SessionData {
   isAdmin?: boolean;
-  /** Album ids this visitor has successfully entered the password for. */
-  unlockedAlbumIds?: string[];
+  /** Album id -> a tag of the password hash it was unlocked with, so changing or removing an
+   * album's password invalidates earlier unlocks. */
+  unlockedAlbums?: Record<string, string>;
 }
 
-export const sessionOptions: SessionOptions = {
-  password: env.sessionSecret,
-  cookieName: "glint_session",
-  cookieOptions: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 30, // 30 days
-  },
-};
+function sessionOptions(): SessionOptions {
+  return {
+    password: getSessionSecret(),
+    cookieName: "glint_session",
+    cookieOptions: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    },
+  };
+}
 
 export async function getSession() {
-  return getIronSession<SessionData>(await cookies(), sessionOptions);
+  return getIronSession<SessionData>(await cookies(), sessionOptions());
 }

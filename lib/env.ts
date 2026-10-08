@@ -7,8 +7,9 @@ export const env = {
   dbPath: path.join(storageRoot, "glint.db"),
   uploadsRoot: path.join(storageRoot, "uploads"),
   adminUsername: process.env.ADMIN_USERNAME ?? "admin",
-  adminPassword: process.env.ADMIN_PASSWORD ?? "changeme",
-  sessionSecret: process.env.SESSION_SECRET ?? "glint-dev-session-secret-change-in-production-min32",
+  /** Unset values are generated on first run and persisted — see lib/secrets.ts. */
+  adminPassword: process.env.ADMIN_PASSWORD || undefined,
+  sessionSecret: process.env.SESSION_SECRET || undefined,
   anthropicApiKey: process.env.ANTHROPIC_API_KEY ?? "",
   siteTitle: process.env.SITE_TITLE ?? "Glint",
 };

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import type { Photo } from "@/lib/albums/service";
+import type { PublicPhoto } from "@/lib/albums/service";
 import styles from "./JustifiedGrid.module.css";
 
 const TARGET_ROW_HEIGHT = 320;
@@ -10,15 +10,15 @@ const GAP = 8;
 const MOBILE_BREAKPOINT = 640;
 
 interface Row {
-  photos: Photo[];
+  photos: PublicPhoto[];
   height: number;
 }
 
 /** Classic justified-gallery packing: fills each row to the container width by scaling
  * a target row height, native aspect ratios preserved, no cropping. */
-function computeRows(photos: Photo[], containerWidth: number): Row[] {
+function computeRows(photos: PublicPhoto[], containerWidth: number): Row[] {
   const rows: Row[] = [];
-  let current: Photo[] = [];
+  let current: PublicPhoto[] = [];
   let aspectSum = 0;
 
   for (const photo of photos) {
@@ -45,7 +45,7 @@ export function JustifiedGrid({
   photos,
   onOpen,
 }: {
-  photos: Photo[];
+  photos: PublicPhoto[];
   onOpen: (index: number) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);

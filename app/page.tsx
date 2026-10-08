@@ -16,7 +16,11 @@ export default async function HomePage() {
 
   const albums = await listAlbums({ publicOnly: true });
   const withCovers = await Promise.all(
-    albums.map(async (album) => ({ album, cover: await getCoverPhoto(album) })),
+    albums.map(async (album) => ({
+      album,
+      // Locked albums get a placeholder: their photos are only served to visitors who've unlocked them.
+      cover: album.passwordHash ? undefined : await getCoverPhoto(album),
+    })),
   );
 
   return (

@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import type { Photo, SafeAlbum } from "@/lib/albums/service";
+import type { PublicPhoto, SafeAlbum } from "@/lib/albums/service";
 import { JustifiedGrid } from "./JustifiedGrid";
 import { Lightbox } from "./Lightbox";
 import styles from "./AlbumView.module.css";
 
-export function AlbumView({ album, photos }: { album: SafeAlbum; photos: Photo[] }) {
+export function AlbumView({ album, photos }: { album: SafeAlbum; photos: PublicPhoto[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (

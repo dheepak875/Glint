@@ -12,30 +12,38 @@ export function PhotoUploader({
   onUploaded: (photos: Photo[]) => void;
 }) {
   const [isDragging, setIsDragging] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
+  const [failed, setFailed] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const uploading = progress !== null;
 
+  /**
+   * One request per photo, in sequence: keeps each request well under Cloudflare's 100MB body
+   * limit, lets a Raspberry Pi process one image at a time, and means a single bad file doesn't
+   * sink a batch of hundreds.
+   */
   async function uploadFiles(files: FileList | File[]) {
     const imageFiles = Array.from(files).filter((f) => f.type.startsWith("image/"));
-    if (imageFiles.length === 0) return;
+    if (imageFiles.length === 0 || uploading) return;
 
-    setUploading(true);
-    setError(null);
+    setFailed([]);
+    setProgress({ done: 0, total: imageFiles.length });
 
-    const formData = new FormData();
-    for (const file of imageFiles) formData.append("files", file);
-
-    const res = await fetch(`/api/albums/${albumId}/photos`, { method: "POST", body: formData });
-    setUploading(false);
-
-    if (!res.ok) {
-      setError("Upload failed. Try again.");
-      return;
+    for (const [i, file] of imageFiles.entries()) {
+      const formData = new FormData();
+      formData.append("files", file);
+      try {
+        const res = await fetch(`/api/albums/${albumId}/photos`, { method: "POST", body: formData });
+        if (!res.ok) throw new Error();
+        const { photos } = await res.json();
+        onUploaded(photos);
+      } catch {
+        setFailed((prev) => [...prev, file.name]);
+      }
+      setProgress({ done: i + 1, total: imageFiles.length });
     }
 
-    const { photos } = await res.json();
-    onUploaded(photos);
+    setProgress(null);
   }
 
   function handleDrop(e: DragEvent<HTMLDivElement>) {
@@ -70,7 +78,9 @@ export function PhotoUploader({
           if (e.key === "Enter" || e.key === " ") inputRef.current?.click();
         }}
       >
-        {uploading ? "Uploading…" : "Drag photos here, or click to browse"}
+        {progress
+          ? `Uploading ${Math.min(progress.done + 1, progress.total)} of ${progress.total}…`
+          : "Drag photos here, or click to browse"}
       </div>
       <input
         ref={inputRef}
@@ -82,7 +92,15 @@ export function PhotoUploader({
         aria-hidden="true"
         tabIndex={-1}
       />
-      {error && <p role="alert" className={styles.error}>{error}</p>}
+      {progress && (
+        <progress className={styles.progress} value={progress.done} max={progress.total} />
+      )}
+      {failed.length > 0 && (
+        <p role="alert" className={styles.error}>
+          {failed.length === 1 ? "1 photo" : `${failed.length} photos`} failed to upload:{" "}
+          {failed.join(", ")}
+        </p>
+      )}
     </div>
   );
 }

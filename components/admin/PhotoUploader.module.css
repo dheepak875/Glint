@@ -26,3 +26,9 @@
   color: var(--color-danger);
   margin-top: 0.5rem;
 }
+
+.progress {
+  width: 100%;
+  margin-top: 0.5rem;
+  accent-color: var(--color-accent);
+}

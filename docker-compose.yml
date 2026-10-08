@@ -1,0 +1,15 @@
+# Quick start: `docker compose up -d`, then open http://localhost:3000/admin
+# Nothing needs configuring. Everything (database, photos, generated secrets) lives in ./data,
+# which is the only thing you need to back up. Optional settings: see .env.example.
+services:
+  glint:
+    build: .
+    container_name: glint
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    volumes:
+      - ./data:/app/data
+    env_file:
+      - path: .env
+        required: false

@@ -1,0 +1,46 @@
+name: Deploy to Raspberry Pi
+
+# Runs on a self-hosted runner on the Pi. Because this repo is public, it must never run on
+# pull_request events: a fork's PR would execute arbitrary code on the Pi. Only pushes to
+# main (which require write access) and manual runs trigger it.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-pi
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build & deploy on Pi
+    # Only the owner's repo deploys; forks that enable Actions won't try to use this runner.
+    if: github.repository == 'dheepak875/Glint'
+    runs-on: [self-hosted, glint-pi]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Sync production environment
+        run: cp /home/dhpk/apps/glint/.env.production .env.production
+
+      - name: Build and start container
+        run: docker compose -f docker-compose.prod.yml up -d --build
+
+      - name: Wait for health check
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8082/api/health > /dev/null; then
+              echo "Glint is healthy"; exit 0
+            fi
+            sleep 2
+          done
+          docker logs --tail 50 glint
+          exit 1
+
+      - name: Prune stale images
+        if: always()
+        run: docker image prune -f
